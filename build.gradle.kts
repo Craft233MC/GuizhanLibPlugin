@@ -18,7 +18,8 @@ repositories {
     maven("https://jitpack.io/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://s01.oss.sonatype.org/content/groups/public/")
+//    maven("https://s01.oss.sonatype.org/content/groups/public/")
+    maven("https://repo.neokoni.ink/snapshots/")
 }
 
 dependencies {
@@ -27,13 +28,13 @@ dependencies {
         testImplementation(dependencyNotation)
     }
 
-    implementation(files("lib/guizhanlib.jar"))
+    implementation("net.guizhanss:guizhanlib-all:2.4.0-SNAPSHOT")
     implementation("org.bstats:bstats-bukkit:3.1.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     api("com.github.houbb:pinyin:0.4.0")
 
     compileOnlyAndTestImplementation("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
-    compileOnlyAndTestImplementation(files("lib/slimefun.jar"))
+    compileOnlyAndTestImplementation("com.github.slimefun:Slimefun:DEV-SNAPSHOT")
 
     // mockbukkit
     testImplementation("com.github.MockBukkit:MockBukkit:v1.20-SNAPSHOT")
@@ -76,6 +77,17 @@ tasks.shadowJar {
 }
 
 publishing {
+    repositories {
+        maven("https://repo.neokoni.ink/snapshots") {
+            credentials {
+                username = System.getenv("MAVEN_ACCOUNT")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
     publications {
         create<MavenPublication>("maven") {
             project.shadow.component(this)
@@ -113,22 +125,6 @@ publishing {
                     url.set("https://github.com/ybw0014/GuizhanLibPlugin/tree/master")
                 }
             }
-        }
-    }
-}
-
-signing {
-    // no need to sign when building
-    if (!version.toString().startsWith("Build")) {
-        sign(publishing.publications["maven"])
-    }
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
     }
 }
