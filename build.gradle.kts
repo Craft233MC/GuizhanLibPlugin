@@ -15,11 +15,11 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://repo.neokoni.ink/snapshots/")
     maven("https://jitpack.io/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://repo.papermc.io/repository/maven-public/")
 //    maven("https://s01.oss.sonatype.org/content/groups/public/")
-    maven("https://repo.neokoni.ink/snapshots/")
 }
 
 dependencies {
