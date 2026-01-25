@@ -7,9 +7,9 @@ plugins {
     `maven-publish`
     signing
     id("io.freefair.lombok") version "8.13.1"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("com.gradleup.shadow") version "9.3.0"
+    id("de.eldoria.plugin-yml.bukkit") version "0.8.0"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
@@ -28,7 +28,7 @@ dependencies {
         testImplementation(dependencyNotation)
     }
 
-    implementation("net.guizhanss:guizhanlib-all:2.4.0-SNAPSHOT")
+    implementation("net.guizhanss:guizhanlib-all:2.5.0")
     implementation("org.bstats:bstats-bukkit:3.1.0")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
     api("com.github.houbb:pinyin:0.4.0")
@@ -90,7 +90,7 @@ publishing {
     }
     publications {
         create<MavenPublication>("maven") {
-            project.shadow.component(this)
+            from(components["shadow"])
 
             artifact(tasks.named("javadocJar").get())
             artifact(tasks.named("sourcesJar").get())
@@ -129,6 +129,22 @@ publishing {
     }
 }
 
+signing {
+    // no need to sign when building
+    if (!version.toString().startsWith("Build")) {
+        sign(publishing.publications["maven"])
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
 bukkit {
     main = "$mainPackage.GuizhanLib"
     apiVersion = "1.18"
@@ -147,5 +163,5 @@ tasks.runServer {
         url("https://builds.guizhanss.com/api/download/ybw0014/GuizhanCraft/master/latest")
     }
     jvmArgs("-Dcom.mojang.eula.agree=true")
-    minecraftVersion("1.20.6")
+    minecraftVersion("1.21.10")
 }
